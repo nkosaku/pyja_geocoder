@@ -26,5 +26,5 @@ dependencies = [
 ]
 
 [project.urls]
-"Source Code" = "https://github.com/kosakun/pyja-geocoder"
-"Documentation" = "https://github.com/kosakun/pyja-geocoder#readme"
+"Source Code" = "https://github.com/nkosaku/pyja_geocoder"
+"Documentation" = "https://github.com/nkosaku/pyja_geocoder#readme"
