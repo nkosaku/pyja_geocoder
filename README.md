@@ -77,4 +77,4 @@ gdf = load_japan_shapefile()  # Load the MLIT shapefile as a GeoDataFrame
 
 ## Data Source
 
-The shapefile used by this package is sourced from MLIT (Ministry of Land, Infrastructure, Transport, and Tourism). The latest data can be accessed [here](https://nlftp.mlit.go.jp/ksj/gml/data/N03/N03-2024/N03-20240101_GML.zip).
+The shapefile used by this package is sourced from MLIT (Ministry of Land, Infrastructure, Transport, and Tourism). The latest data can be accessed [here](https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N03-2024.html).
