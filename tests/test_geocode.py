@@ -1,5 +1,6 @@
 import pandas as pd
 import pytest
+import geopandas as gpd
 
 from pyja_geocoder.data_fetcher import load_japan_shapefile
 from pyja_geocoder.geocode import (
@@ -9,6 +10,7 @@ from pyja_geocoder.geocode import (
     reverse_geocode_single,
     reverse_geocode_from_df,
     reverse_geocode_from_gdf,
+    delete_cache,
 )
 
 
@@ -31,10 +33,20 @@ def test_reverse_geocode_from_df(polygons_gdf):
     lat = polygons_gdf.geometry.representative_point().y
     lng = polygons_gdf.geometry.representative_point().x
     test_df = pd.DataFrame({"latitude": lat, "longitude": lng})
-
-    result = reverse_geocode_from_df(test_df)
+    result = reverse_geocode_from_df(test_df, crs=polygons_gdf.crs)
     target = polygons_gdf[CITY_COLS + [CITYCODE_COL]]
     assert result.equals(target)
+
+
+def test_reverse_geocode_from_df_4326(polygons_gdf):
+    crs = "EPSG:4326"
+
+    lat_4326 = polygons_gdf.geometry.to_crs(crs).representative_point().y
+    lng_4326 = polygons_gdf.geometry.to_crs(crs).representative_point().x
+    test_df_4326 = pd.DataFrame({"latitude": lat_4326, "longitude": lng_4326})
+    result_4326 = reverse_geocode_from_df(test_df_4326, crs=crs)
+    target = polygons_gdf[CITY_COLS + [CITYCODE_COL]]
+    assert result_4326.equals(target)
 
 
 def test_reverse_geocode_from_points(polygons_gdf):
@@ -48,6 +60,15 @@ def test_reverse_geocode_from_points(polygons_gdf):
     assert result.equals(target)
 
 
+def test_reverse_geocode_from_points_4326(polygons_gdf):
+    crs = "EPSG:4326"
+    test_points = polygons_gdf.geometry.to_crs(crs).representative_point()
+    test_points = test_points.apply(lambda p: (p.y, p.x)).values.tolist()
+    result = reverse_geocode_from_points(test_points, crs=crs)
+    target = polygons_gdf[CITY_COLS + [CITYCODE_COL]]
+    assert result.equals(target)
+
+
 def test_reverse_geocode_single(polygons_gdf):
     target = polygons_gdf.sample(1)
     test_point = target.representative_point().values[0]
@@ -57,3 +78,18 @@ def test_reverse_geocode_single(polygons_gdf):
     city, citycode = reverse_geocode_single(test_point.y, test_point.x)
     assert city.tolist() == target_city.tolist()
     assert citycode == target_citycode
+
+
+def test_reverse_geocode_single_4326(polygons_gdf):
+    crs = "EPSG:4326"
+    target = polygons_gdf.sample(1)
+    test_point = target.geometry.to_crs(crs).representative_point().values[0]
+    target_city = target.iloc[0][CITY_COLS].values
+    target_citycode = target.iloc[0][CITYCODE_COL]
+    city, citycode = reverse_geocode_single(test_point.y, test_point.x, crs=crs)
+    assert city.tolist() == target_city.tolist()
+    assert citycode == target_citycode
+
+
+def test_delete_cache():
+    delete_cache()
