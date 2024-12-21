@@ -11,8 +11,14 @@ __all__ = [
     "reverse_geocode_from_df",
     "reverse_geocode_from_points",
     "reverse_geocode_single",
+    "reverse_geocode_from_gdf",
     "load_japan_shapefile",
 ]
 
-from .geocode import reverse_geocode_from_df, reverse_geocode_from_points, reverse_geocode_single
+from .geocode import (
+    reverse_geocode_from_df,
+    reverse_geocode_from_points,
+    reverse_geocode_single,
+    reverse_geocode_from_gdf,
+)
 from .data_fetcher import load_japan_shapefile

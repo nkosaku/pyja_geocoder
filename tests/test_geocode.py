@@ -8,6 +8,7 @@ from pyja_geocoder.geocode import (
     reverse_geocode_from_points,
     reverse_geocode_single,
     reverse_geocode_from_df,
+    reverse_geocode_from_gdf,
 )
 
 
@@ -15,6 +16,15 @@ from pyja_geocoder.geocode import (
 def polygons_gdf():
     # Load the polygons once for the test session
     return load_japan_shapefile()
+
+
+def test_reverse_geocode_from_gdf(polygons_gdf):
+    test_gdf = polygons_gdf[["geometry"]].copy()
+    test_gdf["geometry"] = test_gdf.representative_point()
+
+    result = reverse_geocode_from_gdf(test_gdf)
+    target = polygons_gdf[CITY_COLS + [CITYCODE_COL]]
+    assert result.equals(target)
 
 
 def test_reverse_geocode_from_df(polygons_gdf):
