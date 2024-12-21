@@ -1,14 +1,12 @@
-import logging
 import os
 import zipfile
 
 import geopandas as gpd
 import numpy as np
 import requests
+from tqdm import tqdm
 
-from .constants import MLIT_URL, MLIT_SHP_FOLDER, MLIT_SHP_PREFIX
-
-logger = logging.getLogger(__name__)
+from .constants import MLIT_SHP_FOLDER, MLIT_SHP_PREFIX, MLIT_URL
 
 
 def default_data_dir():
@@ -34,27 +32,33 @@ def download_japan_shapefile(url=MLIT_URL, data_dir=None):
 
     if not all(os.path.exists(path) for path in shp_paths):
         # Download if not present
-        logger.info("Downloading MLIT shapefile from %s...", url)
         try:
-            r = requests.get(url)
-            r.raise_for_status()
+            r = requests.get(url, stream=True)
+            total = int(r.headers.get("content-length", 0))
 
             fname = os.path.basename(url)
             zip_path = os.path.join(data_dir, fname)
-            with open(zip_path, "wb") as f:
-                f.write(r.content)
+            with open(zip_path, "wb") as f, tqdm(
+                total=total,
+                unit="B",
+                unit_scale=True,
+                desc="Downloading MLIT shapefile",
+            ) as pbar:
+                for chunk in r.iter_content(chunk_size=8192):
+                    pbar.update(len(chunk))
+                    f.write(chunk)
+
         except requests.RequestException as e:
-            logger.error("Failed to download MLIT shapefile: %s", e)
-            logger.error(
-                "Alternatively, you can download the zip file manually from %s, put it in %s, and unzip it.",
-                url, data_dir,
+            error_msg = (
+                f"{e}\n"
+                f"Alternatively, you can download the zip file manually "
+                f"from {url} and put it in {data_dir}, then unzip it."
             )
-            raise e
+            raise FileNotFoundError(error_msg) from e
 
         # Extract shapefile components
         with zipfile.ZipFile(zip_path, "r") as z:
             for info in z.infolist():
-                print(info)
                 if info.filename in shp_files:
                     z.extract(info, path=shp_dir)
 
@@ -62,8 +66,6 @@ def download_japan_shapefile(url=MLIT_URL, data_dir=None):
 
         if not all(os.path.exists(path) for path in shp_paths):
             raise FileNotFoundError("Shapefile components not found")
-
-        logger.info("Shapefile components downloaded and extracted.")
 
     return os.path.join(shp_dir, MLIT_SHP_PREFIX + ".shp")
 
@@ -76,8 +78,6 @@ def load_japan_shapefile(shp_path=None):
     if shp_path is None:
         shp_path = download_japan_shapefile()
 
-    logger.debug("Loading shapefile from %s ...", shp_path)
     gdf = gpd.read_file(shp_path)
     gdf.fillna(np.nan, inplace=True)
-    logger.debug("Shapefile loaded.")
     return gdf
