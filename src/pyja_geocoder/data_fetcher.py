@@ -1,6 +1,5 @@
 import logging
 import os
-import re
 import zipfile
 
 import geopandas as gpd
