@@ -1,6 +1,5 @@
 import pandas as pd
 import pytest
-import geopandas as gpd
 
 from pyja_geocoder.data_fetcher import load_japan_shapefile
 from pyja_geocoder.geocode import (
