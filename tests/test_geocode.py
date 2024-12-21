@@ -2,9 +2,8 @@ import pandas as pd
 import pytest
 
 from pyja_geocoder.data_fetcher import load_japan_shapefile
-from pyja_geocoder.geocode import (
-    CITY_COLS,
-    CITYCODE_COL,
+from pyja_geocoder.geocode import CITY_COLS, CITYCODE_COL
+from pyja_geocoder import (
     reverse_geocode_from_points,
     reverse_geocode_single,
     reverse_geocode_from_df,

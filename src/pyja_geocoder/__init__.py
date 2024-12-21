@@ -13,6 +13,7 @@ __all__ = [
     "reverse_geocode_single",
     "reverse_geocode_from_gdf",
     "load_japan_shapefile",
+    "delete_cache",
 ]
 
 from .geocode import (
@@ -20,5 +21,6 @@ from .geocode import (
     reverse_geocode_from_points,
     reverse_geocode_single,
     reverse_geocode_from_gdf,
+    delete_cache,
 )
 from .data_fetcher import load_japan_shapefile
