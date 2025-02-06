@@ -1,6 +1,6 @@
-# pyja_geocoder
+# pyja geocoder
 
-**pyja_geocoder** is a Python package for reverse geocoding in Japan. It uses vectorized operations with GeoPandas to efficiently map latitude and longitude coordinates to corresponding Japanese city attributes, based on official shapefile data provided by MLIT (Ministry of Land, Infrastructure, Transport, and Tourism).
+**pyja geocoder** is a Python package for reverse geocoding in Japan. It uses vectorized operations with GeoPandas to efficiently map latitude and longitude coordinates to corresponding Japanese city attributes, based on official shapefile data provided by MLIT (Ministry of Land, Infrastructure, Transport, and Tourism).
 
 ## Features
 
